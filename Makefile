@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: zelhajou <zelhajou@student.1337.ma>        +#+  +:+       +#+         #
+#    By: sarherna <sarait.hernandez@novateva.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/04 22:57:41 by zelhajou          #+#    #+#              #
-#    Updated: 2024/02/02 15:45:57 by zelhajou         ###   ########.fr        #
+#    Updated: 2024/12/05 09:39:35 by sarherna         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,16 +19,16 @@ UTILS_DIR = utils/
 INCLUDES = -I include/
 
 SRC = $(SRC_DIR)main.c \
-      $(UTILS_DIR)libft.c \
-      $(UTILS_DIR)parse_args.c \
-      $(SRC_DIR)philo_actions.c \
-      $(SRC_DIR)philo_states.c \
-      $(SRC_DIR)philo_threads.c \
-      $(SRC_DIR)simulation_init.c \
+      $(SRC_DIR)philosopher_actions.c \
+      $(SRC_DIR)philosopher_states.c \
+      $(SRC_DIR)philosopher_threads.c \
+      $(SRC_DIR)simulation_initialization.c \
       $(SRC_DIR)health_monitor.c \
-      $(UTILS_DIR)print_status.c \
-	  $(UTILS_DIR)utils.c \
-	  $(UTILS_DIR)validate_args.c
+      $(UTILS_DIR)status_printing.c \
+	$(UTILS_DIR)utils.c \
+	$(UTILS_DIR)argument_validation.c \
+      $(UTILS_DIR)libft.c \
+      $(UTILS_DIR)argument_parsing.c \
 
 OBJ = $(SRC:$(SRC_DIR)%.c=$(OBJ_DIR)%.o)
 

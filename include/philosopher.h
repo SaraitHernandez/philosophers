@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philosopher.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zelhajou <zelhajou@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: sarherna <sarait.hernandez@novateva.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/04 19:06:37 by zelhajou          #+#    #+#             */
-/*   Updated: 2024/02/02 19:55:10 by zelhajou         ###   ########.fr       */
+/*   Updated: 2024/12/05 09:36:55 by sarherna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,75 +21,83 @@
 # include <sys/time.h>
 # include <stdbool.h>
 
-# define RESET			"\033[0m"
-# define BLACK			"\033[30m"
-# define RED			"\033[31m"
-# define GREEN			"\033[32m"
-# define YELLOW			"\033[33m"
-# define BLUE			"\033[34m"
-# define MAGENTA		"\033[35m"
-# define CYAN			"\033[36m"
-# define WHITE			"\033[37m"
+// Color Definitions for Logs
+# define RESET      "\033[0m"
+# define RED        "\033[31m"
+# define GREEN      "\033[32m"
+# define YELLOW     "\033[33m"
+# define BLUE       "\033[34m"
+# define MAGENTA    "\033[35m"
+# define CYAN       "\033[36m"
 
-typedef struct s_philo
+// Philosopher Struct
+typedef struct s_philosopher
 {
-	int				id;
-	int				*meals_eaten;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_sleep;
-	int				num_must_eat;
-	long long		*last_meal_time;
-	int				num_forks;
-	int				num_philosophers;
-	pthread_t		philo_thread;
-	pthread_mutex_t	*fork_mutex;
-	pthread_mutex_t	*protection_mutex;
-	long long		start_time;
-}	t_philo;
+	int             philosopher_id;
+	int             *meals_count;
+	int             time_until_death;
+	int             eating_duration;
+	int             sleeping_duration;
+	int             meals_required;
+	long long       *last_meal_timestamp;
+	int             total_forks;
+	int             total_philosophers;
+	pthread_t       thread;
+	pthread_mutex_t *fork_mutexes;
+	pthread_mutex_t *state_mutex;
+	long long       simulation_start_time;
+}   t_philosopher;
 
-// philo_actions
-void			get_fork(t_philo *philosopher);
-void			start_eating(t_philo *philosopher);
-void			release_forks(t_philo *philosopher);
-// philo_states
-void			start_sleeping(t_philo *philosopher);
-void			start_thinking(t_philo *philosopher);
-// philo_threads
-void			*philo_lifecycle(void *philosopher);
-void			start_philosopher_threads(t_philo *philosophers);
-// simulation_init
-pthread_mutex_t	*initialize_forks(int num_philosophers);
-long long		*initialize_last_meal_time(int num_philosophers);
-void			initialize_philos_data(t_philo *philosophers_initialized,
-					t_philo *philo, pthread_mutex_t *num_forks,
-					long long *last_meal_time);
-t_philo			*initialize_philosophers(t_philo *philo_info);
-t_philo			*initialize_simulation(int argc, char **argv);
-// health_monitor
-t_philo			*setup_health_monitor(t_philo *philosopher);
-void			*check_philosopher_health(void *philosopher);
-void			link_philosophers_to_monitor(t_philo *philosophers,
-					t_philo *monitor);
-// parse and validate argus
-bool			parse_arguments(int argc, char **argv, t_philo *philo_info);
-bool			validate_num_philosophers(const char *arg);
-bool			validate_time_argument(const char *arg);
-bool			validate_num_must_eat(const char *arg);
+// Action Functions
+void            take_forks(t_philosopher *philosopher);
+void            eat_spaghetti(t_philosopher *philosopher);
+void            release_forks(t_philosopher *philosopher);
 
-// print_prompt
-void			ft_putnbr_fd(int n, int fd);
-void			print_status(t_philo *philo, char *action);
-void			rest_in_peace(int id, long long time);
-void			ft_error_parse_msg(void);
-// utils
-void			ft_putstr_fd(char *s, int fd);
-int				ft_atoi(const char *str);
-long long		ft_get_time(void);
-void			ft_sleep(long long time);
-size_t			ft_strlen(char *str);
-bool			ft_is_numeric(const char *str);
-int				ft_isdigit(int c);
-void			clean_garbage(t_philo *philosophers, t_philo *health_monitor);
+// State Management
+void            sleep_philosopher(t_philosopher *philosopher);
+void            think_philosopher(t_philosopher *philosopher);
+
+// Thread Management
+void            *philosopher_lifecycle(void *philosopher);
+void            create_philosopher_threads(t_philosopher *philosophers);
+
+// Initialization
+pthread_mutex_t *initialize_fork_mutexes(int total_philosophers);
+long long       *initialize_last_meal_timestamps(int total_philosophers);
+void            configure_philosopher_data(t_philosopher *configured_philosophers,
+					t_philosopher *simulation_settings,
+					pthread_mutex_t *fork_mutexes,
+					long long *last_meal_timestamps);
+t_philosopher   *initialize_philosophers(t_philosopher *simulation_settings);
+t_philosopher   *setup_simulation(int argc, char **argv);
+
+// Health Monitoring
+t_philosopher   *initialize_health_monitor(t_philosopher *philosopher);
+void            *monitor_philosopher_health(void *monitor_settings);
+void            link_health_monitor_to_philosophers(t_philosopher *philosophers,
+					t_philosopher *monitor);
+
+// Argument Parsing and Validation
+bool            parse_arguments(int argc, char **argv, t_philosopher *simulation_settings);
+bool            validate_philosopher_count(const char *arg);
+bool            validate_time_value(const char *arg);
+bool            validate_meals_required(const char *arg);
+
+// Log and Status Printing
+void            print_status_message(t_philosopher *philosopher, char *action);
+void            announce_death(int philosopher_id, long long elapsed_time);
+void            display_argument_error(void);
+void            print_number_fd(int n, int fd);
+
+// Utility Functions
+void            print_string_fd(char *str, int fd);
+int             string_to_integer(const char *str);
+long long       current_timestamp(void);
+void            sleep_for_duration(long long duration);
+size_t          string_length(char *str);
+bool            is_numeric_string(const char *str);
+int             is_digit_character(int character);
+void            cleanup_simulation_memory(t_philosopher *philosophers,
+					t_philosopher *health_monitor);
 
 #endif
