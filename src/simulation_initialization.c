@@ -5,61 +5,61 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sarherna <sarait.hernandez@novateva.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/01/25 17:13:48 by zelhajou          #+#    #+#             */
-/*   Updated: 2024/12/05 09:37:42 by sarherna         ###   ########.fr       */
+/*   Created: 2024/11/25 17:13:48 by sarherna          #+#    #+#             */
+/*   Updated: 2024/12/06 11:52:33 by sarherna         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
-t_philosopher *setup_simulation(int argc, char **argv)
+t_philo	*setup_simulation(int argc, char **argv)
 {
-	t_philosopher *simulation_settings;
-	t_philosopher *configured_philosophers;
+	t_philo	*ini_settings;
+	t_philo	*configured_philos;
 
-	simulation_settings = malloc(sizeof(t_philosopher));
-	if (!simulation_settings)
+	ini_settings = malloc(sizeof(t_philo));
+	if (!ini_settings)
 		return (NULL);
-	if (!parse_arguments(argc, argv, simulation_settings))
+	if (!parse_arguments(argc, argv, ini_settings))
 	{
-		free(simulation_settings);
+		free(ini_settings);
 		return (NULL);
 	}
-	configured_philosophers = initialize_philosophers(simulation_settings);
-	if (!configured_philosophers)
+	configured_philos = initialize_philosophers(ini_settings);
+	if (!configured_philos)
 	{
-		free(simulation_settings);
+		free(ini_settings);
 		return (NULL);
 	}
-	return (configured_philosophers);
+	return (configured_philos);
 }
 
-t_philosopher *initialize_philosophers(t_philosopher *simulation_settings)
+t_philo	*initialize_philosophers(t_philo *ini_settings)
 {
-	t_philosopher     *configured_philosophers;
-	pthread_mutex_t   *fork_mutexes;
-	long long         *last_meal_timestamps;
+	t_philo			*configured_philos;
+	pthread_mutex_t	*fork_mutexes;
+	long long		*last_meal_timestamps;
 
-	configured_philosophers = malloc(sizeof(t_philosopher) * simulation_settings->total_philosophers);
-	if (!configured_philosophers)
+	configured_philos = malloc(sizeof(t_philo) * ini_settings->total_philos);
+	if (!configured_philos)
 		return (NULL);
-	fork_mutexes = initialize_fork_mutexes(simulation_settings->total_philosophers);
-	last_meal_timestamps = initialize_last_meal_timestamps(simulation_settings->total_philosophers);
-	configure_philosopher_data(configured_philosophers, simulation_settings,
-							   fork_mutexes, last_meal_timestamps);
-	return (configured_philosophers);
+	fork_mutexes = initialize_fork_mutexes(ini_settings->total_philos);
+	last_meal_timestamps = init_last_meal_time(ini_settings->total_philos);
+	configure_philosopher_data(configured_philos, ini_settings,
+		fork_mutexes, last_meal_timestamps);
+	return (configured_philos);
 }
 
-pthread_mutex_t *initialize_fork_mutexes(int total_philosophers)
+pthread_mutex_t	*initialize_fork_mutexes(int total_philos)
 {
-	int             i;
-	pthread_mutex_t *fork_mutexes;
+	int				i;
+	pthread_mutex_t	*fork_mutexes;
 
 	i = 0;
-	fork_mutexes = malloc(sizeof(pthread_mutex_t) * total_philosophers);
+	fork_mutexes = malloc(sizeof(pthread_mutex_t) * total_philos);
 	if (!fork_mutexes)
 		return (NULL);
-	while (i < total_philosophers)
+	while (i < total_philos)
 	{
 		pthread_mutex_init(&fork_mutexes[i], NULL);
 		i++;
@@ -67,49 +67,49 @@ pthread_mutex_t *initialize_fork_mutexes(int total_philosophers)
 	return (fork_mutexes);
 }
 
-long long *initialize_last_meal_timestamps(int total_philosophers)
+long long	*init_last_meal_time(int total_philos)
 {
-	int         i;
-	long long   *last_meal_timestamps;
+	int			i;
+	long long	*last_meal_timestamps;
 
 	i = 0;
-	last_meal_timestamps = malloc(sizeof(long long) * total_philosophers);
+	last_meal_timestamps = malloc(sizeof(long long) * total_philos);
 	if (!last_meal_timestamps)
 		return (NULL);
-	while (i < total_philosophers)
+	while (i < total_philos)
 	{
-		last_meal_timestamps[i] = current_timestamp();
+		last_meal_timestamps[i] = current_time();
 		i++;
 	}
 	return (last_meal_timestamps);
 }
 
-void configure_philosopher_data(t_philosopher *configured_philosophers,
-								t_philosopher *simulation_settings,
-								pthread_mutex_t *fork_mutexes,
-								long long *last_meal_timestamps)
+void	configure_philosopher_data(t_philo *configured_philos,
+			t_philo *ini_settings,
+			pthread_mutex_t *fork_mutexes,
+			long long *last_meal_timestamps)
 {
-	int i;
-	int *meals;
+	int	i;
+	int	*meals;
 
-	meals = malloc(sizeof(int) * simulation_settings->total_philosophers);
+	meals = malloc(sizeof(int) * ini_settings->total_philos);
 	if (!meals)
-		return;
-	memset(meals, 0, sizeof(int) * simulation_settings->total_philosophers);
+		return ;
+	memset(meals, 0, sizeof(int) * ini_settings->total_philos);
 	i = 0;
-	while (i < simulation_settings->total_philosophers)
+	while (i < ini_settings->total_philos)
 	{
-		configured_philosophers[i].philosopher_id = i + 1;
-		configured_philosophers[i].meals_count = meals;
-		configured_philosophers[i].time_until_death = simulation_settings->time_until_death;
-		configured_philosophers[i].eating_duration = simulation_settings->eating_duration;
-		configured_philosophers[i].sleeping_duration = simulation_settings->sleeping_duration;
-		configured_philosophers[i].meals_required = simulation_settings->meals_required;
-		configured_philosophers[i].last_meal_timestamp = last_meal_timestamps;
-		configured_philosophers[i].total_forks = simulation_settings->total_philosophers;
-		configured_philosophers[i].total_philosophers = simulation_settings->total_philosophers;
-		configured_philosophers[i].fork_mutexes = fork_mutexes;
+		configured_philos[i].philo_id = i + 1;
+		configured_philos[i].meals_count = meals;
+		configured_philos[i].time_to_die = ini_settings->time_to_die;
+		configured_philos[i].time_to_eat = ini_settings->time_to_eat;
+		configured_philos[i].time_to_sleep = ini_settings->time_to_sleep;
+		configured_philos[i].meals_required = ini_settings->meals_required;
+		configured_philos[i].last_meal_time = last_meal_timestamps;
+		configured_philos[i].total_forks = ini_settings->total_philos;
+		configured_philos[i].total_philos = ini_settings->total_philos;
+		configured_philos[i].fork_mutexes = fork_mutexes;
 		i++;
 	}
-	free(simulation_settings);
+	free(ini_settings);
 }

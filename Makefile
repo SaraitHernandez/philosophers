@@ -5,8 +5,8 @@
 #                                                     +:+ +:+         +:+      #
 #    By: sarherna <sarait.hernandez@novateva.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/01/04 22:57:41 by zelhajou          #+#    #+#              #
-#    Updated: 2024/12/05 09:39:35 by sarherna         ###   ########.fr        #
+#    Created: 2024/11/25 22:57:41 by sarherna          #+#    #+#              #
+#    Updated: 2024/12/06 11:47:39 by sarherna         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,7 @@ SRC = $(SRC_DIR)main.c \
       $(SRC_DIR)health_monitor.c \
       $(UTILS_DIR)status_printing.c \
 	$(UTILS_DIR)utils.c \
+      $(UTILS_DIR)helper.c \
 	$(UTILS_DIR)argument_validation.c \
       $(UTILS_DIR)libft.c \
       $(UTILS_DIR)argument_parsing.c \
